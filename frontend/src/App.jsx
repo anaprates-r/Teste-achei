@@ -31,7 +31,7 @@ function App() {
 
     try {
       // Importante: verifique se a rota no Flask é /medicamento ou /medicamentos
-      const response = await fetch(`https://achei-api.onrender.com/medicamentos?${params.toString()}`)
+      const response = await fetch(`https://estoque-api-r0sv.onrender.com/medicamentos?${params.toString()}`)
       const data = await response.json()
       
       // Ajuste conforme o formato que o seu Flask retorna (data.items ou data.Medicamento)

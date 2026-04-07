@@ -14,7 +14,7 @@ const UploadFile = () => {
     if (!file) return alert("Por favor, selecione um arquivo primeiro!");
 
     // Ajuste para a porta 8000 se estiver usando o seu script Uvicorn
-    const url = "https://achei-api.onrender.com/upload"; 
+    const url = "https://estoque-api-r0sv.onrender.com/upload"; 
 
     const formData = new FormData();
     formData.append("file", file);
