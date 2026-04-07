@@ -7,15 +7,13 @@ def etl(fileName):
     df_limpo = processar_r84(fileName)
     
     with app.app_context():
-        # 🔹 NOVO: carrega tudo uma vez
-        existentes = {
-            (m.catmat, m.estabelecimento_saude): m
-            for m in Medicamento.query.all()
-        }
+        for _, row in df_limpo.iterrows():
+            # Busca se o par (catmat, estabelecimento) já existe
+            existente = Medicamento.query.filter_by(
+                catmat=row['catmat'], 
+                estabelecimento_saude=row['estabelecimento_saude']
+            ).first()
 
-        for row in df_limpo.to_dict(orient="records"):
-            chave = (row['catmat'], row['estabelecimento_saude'])
-            existente = existentes.get(chave)
             if existente:
                 # Atualiza a quantidade se já existir
                 existente.quantidade = row['quantidade']
