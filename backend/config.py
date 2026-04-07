@@ -14,8 +14,8 @@ CORS(
     resources={r"/*": {"origins": "*"}},
     supports_credentials=True
 )
-
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:Petsaude2026@db.ndkttgicirrqfaclpptq.supabase.co:5432/postgres"
+#app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 
