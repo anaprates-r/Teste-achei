@@ -1,0 +1,4 @@
+{
+    "python.analysis.autoImportCompletions": true,
+    "python.defaultInterpreterPath": "/home/wilson/Documentos/pet_saude/site_achei/.venv/bin/python"
+}
