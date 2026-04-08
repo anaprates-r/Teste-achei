@@ -2,11 +2,16 @@ from processamento import processar_r84
 from models import Medicamento
 from config import db, app
 from sqlalchemy.dialects.postgresql import insert
+import traceback
 
 def etl(fileName):
     # 1. Extração e Transformação (Pandas)
-    df_limpo = processar_r84(fileName)
-    registros = df_limpo.to_dict(orient="records")
+    try:
+        df_limpo = processar_r84(fileName)
+        registros = df_limpo.to_dict(orient="records")
+    except Exception as e:
+        print(f"Erro no ETL: {e}")
+        traceback.print_exc() # Isso vai te mostrar a LINHA EXATA do erro
 
     if not registros:
         return
