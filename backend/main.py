@@ -49,7 +49,9 @@ def listar_estabelecimentos_unicas():
     # Retorna uma lista simples: ["UBS Centro", "Hospital Norte", ...]
     return jsonify([u[0] for u in estabelecimentos if u[0]])
 
-import threading
+from multiprocessing import Process
+
+
 
 def run_etl(file_path):
     try:
@@ -73,9 +75,9 @@ def upload():
     temp_path = os.path.join(upload_path, file.filename)
     file.save(temp_path)
 
-    #RODA EM BACKGROUND
-    thread = threading.Thread(target=run_etl, args=(temp_path,))
-    thread.start()
+    #process
+    p = Process(target=run_etl, args=(temp_path,))
+    p.start()
 
     return jsonify({
         "message": "Arquivo enviado! Processamento em andamento..."

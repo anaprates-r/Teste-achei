@@ -11,7 +11,7 @@ def processar_r84(arquivo):
     medicamento_atual = None
     registros = []
 
-    for _, row in df.iterrows():
+    for _, row in df.itertuples():
         # A coluna 1 parece conter os rótulos de texto
         col_texto = str(row[1]).strip() if pd.notna(row[1]) else ""
 
