@@ -59,6 +59,10 @@ def run_etl(file_path):
         print("ETL finalizado com sucesso")
     except Exception as e:
         print(f"Erro no ETL: {e}")
+    finally:
+        # Deleta o arquivo após o processamento 
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
 @app.route("/upload", methods=["POST"])
 def upload():
