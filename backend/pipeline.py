@@ -6,15 +6,23 @@ import traceback
 
 def etl(fileName):
     # 1. Extração e Transformação (Pandas)
-    try:
-        df_limpo = processar_r84(fileName)
-        registros = df_limpo.to_dict(orient="records")
-    except Exception as e:
-        print(f"Erro no ETL: {e}")
-        traceback.print_exc() # Isso vai te mostrar a LINHA EXATA do erro
-
-    if not registros:
+    #try:
+     #   df_limpo = processar_r84(fileName)
+      #  registros = df_limpo.to_dict(orient="records")
+    #except Exception as e:
+     #   print(f"Erro no ETL: {e}")
+      #  traceback.print_exc() # mostrar a LINHA EXATA do erro
+    df_limpo = processar_r84(fileName)
+    #if not registros:
+     #   return
+    if df_limpo is None or df_limpo.empty:
+        print("DEBUG: O DataFrame está VAZIO. Verifique a lógica de leitura do Excel.")
         return
+
+    registros = df_limpo.to_dict(orient="records")
+    
+    # 1. VEJA SE AS CHAVES SÃO IGUAIS AO MODELS.PY
+    print(f"DEBUG: Chaves do dicionário: {registros[0].keys()}")
 
     with app.app_context():
         # 2. Prepara a instrução de inserção
