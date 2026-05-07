@@ -3,11 +3,12 @@ from flask import request, jsonify
 from config import app,db
 from models import Medicamento
 from pipeline import etl
-import tempfile
 
 import os
 
-
+@app.route('/')
+def index_page():
+    return "<h1> Flask API </h1>"
 @app.route('/medicamentos', methods=['GET'])
 def listar_medicamentos():
     # 1. Captura parâmetros de paginação
@@ -49,23 +50,9 @@ def listar_estabelecimentos_unicas():
     # Retorna uma lista simples: ["UBS Centro", "Hospital Norte", ...]
     return jsonify([u[0] for u in estabelecimentos if u[0]])
 
-from multiprocessing import Process
-
-
-
-def run_etl(file_path):
-    try:
-        etl(fileName=file_path)
-        print("ETL finalizado com sucesso")
-    except Exception as e:
-        print(f"Erro no ETL: {e}")
-    finally:
-        # Deleta o arquivo após o processamento 
-        if os.path.exists(file_path):
-            os.remove(file_path)
-
 @app.route("/upload", methods=["POST"])
 def upload():
+    # 1. Validação do arquivo
     if 'file' not in request.files:
         return jsonify({"message": "Nenhum arquivo enviado"}), 400
 
@@ -73,26 +60,35 @@ def upload():
     if file.filename == '':
         return jsonify({"message": "Arquivo sem nome"}), 400
 
-    upload_path = "uploads"
-    os.makedirs(upload_path, exist_ok=True)
+    # 2. Caminhos (backend/uploads)
+    upload_path = app.config['UPLOAD_FOLDER']
+    if not os.path.exists(upload_path):
+        os.makedirs(upload_path)
 
-    temp_path = os.path.join(upload_path, file.filename)
-    file.save(temp_path)
+    file_path = os.path.join(upload_path, file.filename)
+    file.save(file_path)
 
-    #process
-    p = Process(target=run_etl, args=(temp_path,))
-    p.start()
+    try:
+        # 3. O Pipeline aciona o Banco de Dados
+        # Passe o caminho completo do arquivo para o seu processador
+        etl(fileName=file_path) 
 
-    return jsonify({
-        "message": "Arquivo enviado! Processamento em andamento..."
-    }), 202
+        # 4. Retorno de sucesso para o React
+        # O React receberá esse 201 e saberá que os dados já estão no banco
+        return jsonify({
+            "message": "Arquivo processado e dados salvos no banco com sucesso!"
+        }), 201
+
+    except Exception as e:
+        # Se o banco de dados falhar, o erro cai aqui
+        print(f"Erro no pipeline: {e}")
+        return jsonify({"message": f"Erro ao salvar no banco: {str(e)}"}), 500
+
+
 
 #To run the aplication:
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
 
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
-
-
+    app.run(debug=True)
